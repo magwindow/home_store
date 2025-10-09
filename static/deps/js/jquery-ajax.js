@@ -51,6 +51,9 @@ $(document).ready(function () {
         });
     });
 
+
+
+
     // Ловим собыитие клика по кнопке удалить товар из корзины
     $(document).on("click", ".remove-from-cart", function (e) {
         // Блокируем его базовое действие
@@ -99,14 +102,17 @@ $(document).ready(function () {
         });
     });
 
-    // Теперь + - количества товара
+
+
+
+    // Теперь + - количества товара 
     // Обработчик события для уменьшения значения
     $(document).on("click", ".decrement", function () {
         // Берем ссылку на контроллер django из атрибута data-cart-change-url
         var url = $(this).data("cart-change-url");
         // Берем id корзины из атрибута data-cart-id
         var cartID = $(this).data("cart-id");
-        // Ищем ближайшеий input с количеством
+        // Ищем ближайшеий input с количеством 
         var $input = $(this).closest('.input-group').find('.number');
         // Берем значение количества товара
         var currentValue = parseInt($input.val());
@@ -125,7 +131,7 @@ $(document).ready(function () {
         var url = $(this).data("cart-change-url");
         // Берем id корзины из атрибута data-cart-id
         var cartID = $(this).data("cart-id");
-        // Ищем ближайшеий input с количеством
+        // Ищем ближайшеий input с количеством 
         var $input = $(this).closest('.input-group').find('.number');
         // Берем значение количества товара
         var currentValue = parseInt($input.val());
@@ -148,12 +154,12 @@ $(document).ready(function () {
             },
 
             success: function (data) {
-                 // Сообщение
+                // Сообщение
                 successMessage.html(data.message);
                 successMessage.fadeIn(400);
-                 // Через 7сек убираем сообщение
+                // Через 7сек убираем сообщение
                 setTimeout(function () {
-                     successMessage.fadeOut(400);
+                    successMessage.fadeOut(400);
                 }, 7000);
 
                 // Изменяем количество товаров в корзине
@@ -174,24 +180,24 @@ $(document).ready(function () {
     }
 
     // Берем из разметки элемент по id - оповещения от django
-    var notification = $("#notification");
+    var notification = $('#notification');
     // И через 7 сек. убираем
     if (notification.length > 0) {
         setTimeout(function () {
-            notification.alert("close");
+            notification.alert('close');
         }, 7000);
     }
 
     // При клике по значку корзины открываем всплывающее(модальное) окно
-    $("#modalButton").click(function () {
-        $("#exampleModal").appendTo("body");
+    $('#modalButton').click(function () {
+        $('#exampleModal').appendTo('body');
 
-        $("#exampleModal").modal("show");
+        $('#exampleModal').modal('show');
     });
 
     // Собыите клик по кнопке закрыть окна корзины
-    $("#exampleModal .btn-close").click(function () {
-        $("#exampleModal").modal("hide");
+    $('#exampleModal .btn-close').click(function () {
+        $('#exampleModal').modal('hide');
     });
 
     // Обработчик события радиокнопки выбора способа доставки
@@ -202,6 +208,29 @@ $(document).ready(function () {
             $("#deliveryAddressField").show();
         } else {
             $("#deliveryAddressField").hide();
+        }
+    });
+
+    // Форматирования ввода номера телефона в форме (xxx) xxx-хххx
+    document.getElementById('id_phone_number').addEventListener('input', function (e) {
+        var x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+        e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+    });
+
+    // Проверяем на стороне клинта коррекность номера телефона в форме xxx-xxx-хх-хx
+    $('#create_order_form').on('submit', function (event) {
+        var phoneNumber = $('#id_phone_number').val();
+        var regex = /^\(\d{3}\) \d{3}-\d{4}$/;
+
+        if (!regex.test(phoneNumber)) {
+            $('#phone_number_error').show();
+            event.preventDefault();
+        } else {
+            $('#phone_number_error').hide();
+
+            // Очистка номера телефона от скобок и тире перед отправкой формы
+            var cleanedPhoneNumber = phoneNumber.replace(/[()\-\s]/g, '');
+            $('#id_phone_number').val(cleanedPhoneNumber);
         }
     });
 });
