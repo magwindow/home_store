@@ -3,9 +3,11 @@ venv/
 .pylintrc
 __pycache__/
 cache/
+.env
 
 # ide stuff
 .idea
+.gigaide/
 
 # django stuff
 db.sqlite3
